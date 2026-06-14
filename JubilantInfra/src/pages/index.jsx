@@ -182,7 +182,7 @@ export default function Home() {
               }}
               className="w-full max-w-md mx-auto lg:ml-auto"
             >
-              <Card className="bg-white/95 backdrop-blur-2xl border-white/40 shadow-2xl overflow-hidden">
+              <Card className="bg-white/80 backdrop-blur-xl border-white/30 shadow-2xl overflow-hidden">
                 <div className="h-1 w-full bg-gradient-to-r from-primary via-cyan-400 to-primary" />
                 <CardContent className="p-5 md:p-7">
                   <h3 className="font-serif text-xl md:text-2xl font-bold mb-5 text-foreground flex items-center gap-3">
@@ -246,86 +246,80 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-foreground/80 text-sm flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-primary" /> Number of Passengers
-                      </Label>
-                      <div className="flex items-center gap-3">
-                        <button type="button" onClick={() => handlePaxChange(paxCount - 1)} disabled={paxCount <= 1}
-                          className="w-10 h-10 rounded-lg border border-border bg-muted/60 flex items-center justify-center text-lg font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-all">−</button>
-                        <div className="flex-1 text-center">
-                          <span className="text-2xl font-bold text-foreground">{paxCount}</span>
-                          <span className="text-sm text-muted-foreground ml-1">passenger(s)</span>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-foreground/80 text-xs flex items-center gap-1">
+                          <Users className="w-3 h-3 text-primary" /> Passengers
+                        </Label>
+                        <div className="flex items-center gap-1">
+                          <button type="button" onClick={() => handlePaxChange(paxCount - 1)} disabled={paxCount <= 1}
+                            className="w-6 h-6 rounded border border-border bg-muted/60 flex items-center justify-center text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-all">−</button>
+                          <span className="w-7 text-center text-xs font-bold text-foreground tabular-nums">{paxCount}</span>
+                          <button type="button" onClick={() => handlePaxChange(paxCount + 1)} disabled={paxCount >= 20}
+                            className="w-6 h-6 rounded border border-border bg-muted/60 flex items-center justify-center text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-all">+</button>
                         </div>
-                        <button type="button" onClick={() => handlePaxChange(paxCount + 1)} disabled={paxCount >= 20}
-                          className="w-10 h-10 rounded-lg border border-border bg-muted/60 flex items-center justify-center text-lg font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-all">+</button>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-foreground/80 text-xs flex items-center gap-1">Vehicle</Label>
+                        <Select value={vehicle} onValueChange={setVehicle}>
+                          <SelectTrigger className="bg-muted/60 border-border text-xs h-7 px-2">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {vehicles.map(v => {
+                              let Icon = null;
+                              switch (v.type) {
+                                case "No Vehicle": Icon = X; break;
+                                case "Bike": case "Scooter": Icon = Bike; break;
+                                case "Car": case "SUV": Icon = Car; break;
+                                case "Mini Truck": case "Cargo Vehicle": Icon = Truck; break;
+                                case "Bus": Icon = Bus; break;
+                                default: Icon = Car;
+                              }
+                              return (
+                                <SelectItem key={v.id} value={v.id}>
+                                  <div className="flex items-center gap-2">
+                                    {Icon && <Icon className="w-3 h-3 text-muted-foreground" />}
+                                    <span>{v.type}</span>
+                                  </div>
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
-                    {paxCount > 0 && (
-                      <div className="space-y-2">
-                        <Label className="text-foreground/80 text-sm flex items-center gap-1.5">
-                          <Users className="w-3.5 h-3.5 text-primary" /> Passenger Details
-                        </Label>
-                        <p className="text-[10px] text-muted-foreground">At least one phone number required</p>
-                        <div className="max-h-[160px] md:max-h-[240px] overflow-y-auto pr-1 space-y-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
-                          <AnimatePresence mode="popLayout">
-                            {passengerDetails.map((p, idx) => (
-                              <motion.div key={idx} layout
-                                initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                                animate={{ opacity: 1, x: 0, scale: 1 }}
-                                exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                                className="bg-muted/30 rounded-lg p-3 border border-border/60"
-                              >
-                                <p className="text-[10px] font-semibold text-primary uppercase tracking-wider mb-2">Passenger {idx + 1}</p>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <Label className="text-[10px] text-muted-foreground mb-1 block">Full Name</Label>
-                                    <Input placeholder="Enter name" value={p.name} onChange={(e) => updatePassengerField(idx, "name", e.target.value)} className="h-8 text-xs bg-background border-border" />
-                                  </div>
-                                  <div>
-                                    <Label className="text-[10px] text-muted-foreground mb-1 block">Phone No.</Label>
-                                    <Input placeholder="Enter phone" value={p.phone} onChange={(e) => updatePassengerField(idx, "phone", e.target.value)} className="h-8 text-xs bg-background border-border" />
-                                  </div>
-                                </div>
-                              </motion.div>
-                            ))}
-                          </AnimatePresence>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <Label className="text-foreground/80 text-sm flex items-center gap-1.5">
-                        Vehicle
+                        <Users className="w-3.5 h-3.5 text-primary" /> Passenger Details
                       </Label>
-                      <Select value={vehicle} onValueChange={setVehicle}>
-                        <SelectTrigger className="bg-muted/60 border-border text-sm h-10">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {vehicles.map(v => {
-                            let Icon = null;
-                            switch (v.type) {
-                              case "No Vehicle": Icon = X; break;
-                              case "Bike": case "Scooter": Icon = Bike; break;
-                              case "Car": case "SUV": Icon = Car; break;
-                              case "Mini Truck": case "Cargo Vehicle": Icon = Truck; break;
-                              case "Bus": Icon = Bus; break;
-                              default: Icon = Car;
-                            }
-                            return (
-                              <SelectItem key={v.id} value={v.id}>
-                                <div className="flex items-center gap-2">
-                                  {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground" />}
-                                  <span>{v.type}</span>
+                      <p className="text-[10px] text-muted-foreground">At least one phone number required</p>
+                      <div className="h-[132px] md:h-[156px] overflow-y-auto pr-1 space-y-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                        <AnimatePresence mode="popLayout">
+                          {passengerDetails.map((p, idx) => (
+                            <motion.div key={idx} layout
+                              initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                              animate={{ opacity: 1, x: 0, scale: 1 }}
+                              exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                              className="bg-muted/30 rounded-lg p-3 border border-border/60"
+                            >
+                              <p className="text-[10px] font-semibold text-primary uppercase tracking-wider mb-2">Passenger {idx + 1}</p>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <Label className="text-[10px] text-muted-foreground mb-1 block">Full Name</Label>
+                                  <Input placeholder="Enter name" value={p.name} onChange={(e) => updatePassengerField(idx, "name", e.target.value)} className="h-8 text-xs bg-background border-border" />
                                 </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
+                                <div>
+                                  <Label className="text-[10px] text-muted-foreground mb-1 block">Phone No.</Label>
+                                  <Input placeholder="Enter phone" value={p.phone} onChange={(e) => updatePassengerField(idx, "phone", e.target.value)} className="h-8 text-xs bg-background border-border" />
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
                     </div>
 
                     <Button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 mt-1 py-5 text-base font-semibold group">
